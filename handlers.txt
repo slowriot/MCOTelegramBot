@@ -1,0 +1,3 @@
+# command handlers for each command
+# format:
+# telegram command|handler program
