@@ -126,7 +126,6 @@ handler="$(grep -v "^#" "$handlers_file" | grep "^$command|" | head -1)"
 
 if [ -z "$handler" ]; then
   # no return, so this is not a command we recognise
-  send_message "$chat_id" "$(url_encode "I have no handler for command /$command - why don't you let me handle it? :)")" >/dev/null
   exit
 fi
 
