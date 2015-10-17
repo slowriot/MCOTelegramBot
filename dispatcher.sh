@@ -126,6 +126,9 @@ if [ -z "$handler" ]; then
   exit
 fi
 
+# activate the "is typing..." message
+send_busy
+
 # trim away up to the first pipe delimiter to get the command to execute
 handler=${handler#*|}
 
