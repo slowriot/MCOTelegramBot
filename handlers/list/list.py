@@ -6,7 +6,7 @@ import urllib2
 LIST_ENDPOINT = "http://minecraftonline.com/cgi-bin/getplayerlist.sh"
 LIST_OUTPUT = "{count} players online: {players}"
 
-players = urllib2.urlopen(LIST_ENDPOINT).read
+players = urllib2.urlopen(LIST_ENDPOINT).read()
 
 count = len(players.split(","))
 
