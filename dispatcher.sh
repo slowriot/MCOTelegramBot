@@ -113,6 +113,10 @@ fi
 command="${text%% *}"
 # sanitise the command to strip any silly business, and limit to 64 chars
 command="$(tr -dc [:alnum:]'_-' <<< "$command" | head -c 64)"
+if [ -z "$command" ]; then
+  # this isn't a valid command, so bail
+  exit
+fi
 
 handler=$(grep -v "^#" "$handlers_file" | grep "^$command" | head -1)
 
