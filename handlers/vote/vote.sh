@@ -1,6 +1,9 @@
 #!/bin/bash
 # voting script to accept pull requests etc
 
+# settings: how many yes votes minus no votes are required to accept
+quorum=15
+
 # get pending pull requests
 jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open")
 
@@ -31,7 +34,34 @@ if [ -z "$args" ]; then
 fi
   
 # process votes
-echo "Pull request accepting by voting to be implemented very soon"
-echo "(DEBUG: args is \"$args\")"
-
-# curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
+# take the first argument, issue number, restrict to digits only
+pull_id="$(tr -dc [:digit:] <<< "${args%% *}")"
+if [ -z "$pull_id" ]; then
+  echo "Please vote by issue number."
+  exit
+fi
+# validate that this is an open pull request
+jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id")
+pull_mergeable=$(jq -r ".mergeable" <<< "$jsondata")
+if [ "$pull_mergeable" != "true" ]; then
+  echo "There is no mergeable pull request numbered $pull_id."
+  exit
+fi
+# take the second argument
+arg2="${args#* }"
+# lowercase
+arg2="${arg2,,}"
+if [ "${arg2}" = "yes" ]; then
+  echo "This is not yet implemented, but your hair looks lovely."
+  # check quorum
+  # merge
+  # curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
+elif [ "${arg2}" = "no" ]; then
+  echo "This is not yet implemented, but have you lost weight?"
+elif [ "${arg2}" = "veto" ]; then
+  echo "This is not yet implemented, and let's face it, if it were you probably wouldn't have perms to use it anyway."
+elif [ "${arg2}" = "maybe" ]; then
+  echo "Non-vote accepted on pull request $pull_id."
+else
+  echo "Possible voting options are \"yes\", \"no\", and admins may use \"veto\"."
+fi
