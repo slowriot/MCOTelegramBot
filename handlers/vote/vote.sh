@@ -4,6 +4,8 @@
 # settings: how many yes votes minus no votes are required to accept
 quorum=15
 
+scriptdir="$(dirname "${BASH_SOURCE[0]}")"
+
 # get pending pull requests
 jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open")
 
@@ -51,13 +53,43 @@ fi
 arg2="${args#* }"
 # lowercase
 arg2="${arg2,,}"
+votes_no_file="$scriptdir/votes-$pull_id-yes.txt"
+votes_yes_file="$scriptdir/votes-$pull_id-no.txt"
 if [ "${arg2}" = "yes" ]; then
-  echo "This is not yet implemented, but your hair looks lovely."
+  # apply this user's vote to the yes votes and remove it from the no votes if it was there previously
+  echo "$MCOBOT_FROM_ID" >> "$votes_yes_file"
+  temp="$(sort "$votes_yes_file" 2>/dev/null | uniq)"
+  echo "$temp" > "$votes_yes_file"
+  temp="$(grep -v "^$MCOBOT_FROM_ID$" "$votes_no_file" 2>/dev/null)"
+  echo "$temp" > "$votes_no_file"
   # check quorum
-  # merge
-  # curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
+  votes_yes=$(wc -w < "$votes_yes_file")
+  votes_no=$( wc -w < "$votes_no_file")
+  votes_total=$((votes_yes - votes_no))
+  if [ "$votes_total" -ge "$quorum" ]; then
+    # merge
+    echo "This would normally merge the pull request but is not yet implemented, however your hair still looks lovely."
+    # curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
+  else
+    echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
+  fi
 elif [ "${arg2}" = "no" ]; then
-  echo "This is not yet implemented, but have you lost weight?"
+  # apply this user's vote to the no votes and remove it from the yes votes if it was there previously
+  echo "$MCOBOT_FROM_ID" >> "$votes_no_file"
+  temp="$(sort "$votes_no_file" 2>/dev/null | uniq)"
+  echo "$temp" > "$votes_no_file"
+  temp="$(grep -v "^$MCOBOT_FROM_ID$" "$votes_yes_file" 2>/dev/null)"
+  echo "$temp" > "$votes_yes_file"
+  # check quorum
+  votes_yes=$(wc -w < "$votes_yes_file")
+  votes_no=$( wc -w < "$votes_no_file")
+  votes_total=$((votes_yes - votes_no))
+  if [ "$votes_total" -le "-$quorum" ]; then
+    # close
+    echo "This would normally close the request but that is not yet implemented, however that's a nice tan."
+  else
+    echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
+  fi
 elif [ "${arg2}" = "veto" ]; then
   echo "This is not yet implemented, and let's face it, if it were you probably wouldn't have perms to use it anyway."
 elif [ "${arg2}" = "maybe" ]; then

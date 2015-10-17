@@ -1,2 +1,6 @@
+# general bot access
 token.txt
 secreturl.txt
+
+# handler: vote
+handlers/vote/votes-*
