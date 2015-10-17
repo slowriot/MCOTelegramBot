@@ -23,7 +23,7 @@ if [ -z "$args" ]; then
     pull_id=$(jq -r ".[$i].number" <<< "$jsondata")
     pull_url=$(jq -r ".[$i].html_url" <<< "$jsondata")
     pull_user=$(jq -r ".[$i].user.login" <<< "$jsondata")
-    pull_desc=$(jq -r ".[$i].body" <<< "$jsondata")
+    pull_desc=$(jq -r ".[$i].title" <<< "$jsondata")
     echo "$pull_id: \"$pull_desc\" by $pull_user - $pull_url"
   done
   echo "Vote with /vote [number] [yes|no|veto]"
@@ -33,3 +33,5 @@ fi
 # process votes
 echo "Pull request accepting by voting to be implemented very soon"
 echo "(DEBUG: args is \"$args\")"
+
+# curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
