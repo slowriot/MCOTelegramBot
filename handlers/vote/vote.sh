@@ -7,7 +7,9 @@ quorum=15
 scriptdir="$(dirname "${BASH_SOURCE[0]}")"
 
 # get pending pull requests
-jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open")
+client_id="$(cat "$scriptdir/client_id.txt")"
+client_secret="$(cat "$scriptdir/client_secret.txt")"
+jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open&client_id=$client_id&client_secret=$client_secret")
 
 #args="${MCOBOT_TEXT#* }"
 args="$(cut -sd ' ' -f 2- <<< "$MCOBOT_TEXT")"
@@ -43,7 +45,7 @@ if [ -z "$pull_id" ]; then
   exit
 fi
 # validate that this is an open pull request
-jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id")
+jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id?client_id=$client_id&client_secret=$client_secret")
 pull_mergeable=$(jq -r ".mergeable" <<< "$jsondata")
 if [ "$pull_mergeable" != "true" ]; then
   echo "There is no mergeable pull request numbered $pull_id."
@@ -68,8 +70,9 @@ if [ "${arg2}" = "yes" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -ge "$quorum" ]; then
     # merge
-    echo "This would normally merge the pull request but is not yet implemented, however your hair still looks lovely."
-    # curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=xxxx&client_secret=yyyy"
+    response=$(curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" | jq -r .message)
+    echo "Voting for request $pull_id: $response"
+    git pull
   else
     echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
   fi
@@ -87,6 +90,7 @@ elif [ "${arg2}" = "no" ]; then
   if [ "$votes_total" -le "-$quorum" ]; then
     # close
     echo "This would normally close the request but that is not yet implemented, however that's a nice tan."
+    git pull
   else
     echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
   fi

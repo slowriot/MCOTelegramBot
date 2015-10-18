@@ -3,4 +3,5 @@ token.txt
 secreturl.txt
 
 # handler: vote
+handlers/vote/client_secret.txt
 handlers/vote/votes-*
