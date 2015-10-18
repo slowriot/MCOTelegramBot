@@ -9,7 +9,7 @@ scriptdir="$(dirname "${BASH_SOURCE[0]}")"
 # get pending pull requests
 client_id="$(cat "$scriptdir/client_id.txt")"
 client_secret="$(cat "$scriptdir/client_secret.txt")"
-jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open&client_id=$client_id&client_secret=$client_secret")
+jsondata=$(curl -s --max-time 5 "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls?state=open&client_id=$client_id&client_secret=$client_secret")
 
 #args="${MCOBOT_TEXT#* }"
 args="$(cut -sd ' ' -f 2- <<< "$MCOBOT_TEXT")"
@@ -45,10 +45,12 @@ if [ -z "$pull_id" ]; then
   exit
 fi
 # validate that this is an open pull request
-jsondata=$(curl -s "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id?client_id=$client_id&client_secret=$client_secret")
+jsondata=$(curl -s --max-time 5 "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id?client_id=$client_id&client_secret=$client_secret")
 pull_mergeable=$(jq -r ".mergeable" <<< "$jsondata")
 if [ "$pull_mergeable" != "true" ]; then
   echo "There is no mergeable pull request numbered $pull_id."
+  echo "DEBUG: full response was: "
+  echo "$jsondata"
   exit
 fi
 # take the second argument
@@ -70,7 +72,7 @@ if [ "${arg2}" = "yes" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -ge "$quorum" ]; then
     # merge
-    response=$(curl -s --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" | jq -r .message)
+    response=$(curl -s --max-time 5 --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" | jq -r .message)
     echo "Voting for request $pull_id: $response"
     git pull
   else
