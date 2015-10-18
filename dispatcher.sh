@@ -118,7 +118,7 @@ if [ -z "$command" ]; then
   exit
 fi
 
-handler=$(grep -v "^#" "$handlers_file" | grep "^$command" | head -1)
+handler=$(grep -v "^#" "$handlers_file" | grep "^$command|" | head -1)
 
 if [ -z "$handler" ]; then
   # no return, so this is not a command we recognise
