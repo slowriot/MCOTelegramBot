@@ -5,3 +5,4 @@
 list|handlers/list/list.py
 start|handlers/start/start.sh
 vote|handlers/vote/vote.sh
+me|handlers/me/me.sh
