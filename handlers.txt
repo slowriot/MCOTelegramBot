@@ -7,3 +7,4 @@ start|handlers/start/start.sh
 vote|handlers/vote/vote.sh
 me|handlers/me/me.sh
 issues|handlers/issues/issues.py
+lmgtfy|handlers/lmgtfy/lmgtfy.sh
