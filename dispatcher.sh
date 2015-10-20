@@ -144,4 +144,5 @@ export "$env_prefix"TEXT="$text"
 reply="$($handler 2>&1)"
 
 # TODO: process different types of responses properly
-send_message "$chat_id" "$reply"
+reply_encoded="$("$scriptdir/urlencode.sh" <<< "$reply")"
+send_message "$chat_id" "$reply_encoded"
