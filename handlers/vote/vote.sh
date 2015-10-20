@@ -80,7 +80,7 @@ if [ "${arg2}" = "yes" ]; then
         -H "Content-Type: application/json" \
         --request PUT \
         -d "{\"commit_message\":\"$commit_message\"}" \
-        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/6/merge?client_id=$client_id&client_secret=$client_secret" \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" \
         | jq -r .message
     )"
     echo "Voting for request $pull_id: $response"
