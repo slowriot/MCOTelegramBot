@@ -47,6 +47,10 @@ function send_error() {
   # id: user or channel to send errors to, hardcoded for now
   send_message 118667124 "ERROR: $1"
 }
+function url_encode() {
+  # 1 = string to encode
+  perl -MURI::Escape -e 'print uri_escape($ARGV[0]);' "$1"
+}
 
 ########## Set and unset the webhook #########
 
@@ -54,7 +58,7 @@ if [ "$1" = "setup" ]; then
   secreturl=$(cat "$scriptdir/secreturl.txt")
   thisurl="https://minecraftonline.com/cgi-bin/telegram_bot_webhook_$secreturl"
   echo "Requesting webhook setting for $thisurl"
-  thisurl=$(./urlencode.sh <<< "$thisurl")
+  thisurl="$(urlencode "$thisurl")"
   send_raw "setWebhook?url=$thisurl"
   exit
 fi
@@ -99,7 +103,7 @@ text=$(      jq -r ".message.text"          <<< "$jsondata")
 if [ "$from_id" = "" ] || [ "$chat_id" = "" ] || [ "$text" = "" ]; then
   # ignore any updates that don't have the components we need to reply
   echo "ERROR:$username:$chat_id:$text"
-  send_error "Invalid input: user $username ($from_id, chat $chat_id) text $text id $message_id" >/dev/null
+  send_error "$(url_encode "Invalid input: user $username ($from_id, chat $chat_id) text $text id $message_id")" >/dev/null
   exit
 fi
 
@@ -122,7 +126,7 @@ handler="$(grep -v "^#" "$handlers_file" | grep "^$command|" | head -1)"
 
 if [ -z "$handler" ]; then
   # no return, so this is not a command we recognise
-  send_message "$chat_id" "I have no handler for command /$command - why don't you let me handle it? :)" >/dev/null
+  send_message "$chat_id" "$(url_encode "I have no handler for command /$command - why don't you let me handle it? :)")" >/dev/null
   exit
 fi
 
@@ -144,5 +148,5 @@ export "$env_prefix"TEXT="$text"
 reply="$($handler 2>&1)"
 
 # TODO: process different types of responses properly
-reply_encoded="$("$scriptdir/urlencode.sh" <<< "$reply")"
-send_message "$chat_id" "$reply_encoded"
+##send_message "$chat_id" "$(url_encode "$reply")"
+"$scriptdir/send_to_telegram.sh" "$chat_id" "$(url_encode "$reply")"
