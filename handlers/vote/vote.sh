@@ -72,7 +72,17 @@ if [ "${arg2}" = "yes" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -ge "$quorum" ]; then
     # merge
-    response=$(curl -s --max-time 5 --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" | jq -r .message)
+    commit_message="$("$scriptdir"/../../urlencode.sh "Automatically merged after Telegram vote ($votes_yes in favour, $votes_no against)")"
+    repo_secret="$(cat "$scriptdir/repo_secret.txt")"
+    response="$(
+      curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        --request PUT \
+        -d "{\"commit_message\":\"$commit_message\"}" \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/6/merge?client_id=$client_id&client_secret=$client_secret" \
+        | jq -r .message
+    )"
     echo "Voting for request $pull_id: $response"
     git pull
   else
