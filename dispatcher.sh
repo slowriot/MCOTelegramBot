@@ -118,7 +118,7 @@ if [ -z "$command" ]; then
   exit
 fi
 
-handler=$(grep -v "^#" "$handlers_file" | grep "^$command|" | head -1)
+handler="$(grep -v "^#" "$handlers_file" | grep "^$command|" | head -1)"
 
 if [ -z "$handler" ]; then
   # no return, so this is not a command we recognise
@@ -130,7 +130,7 @@ fi
 send_busy
 
 # trim away up to the first pipe delimiter to get the command to execute
-handler=${handler#*|}
+handler="${handler#*|}"
 
 # export environment variables CGI style
 env_prefix="MCOBOT_"
@@ -141,7 +141,7 @@ export "$env_prefix"MESSAGE_ID="$message_id"
 export "$env_prefix"TEXT="$text"
 
 # yeah, this will run any code specified as a handler - security awareness is required
-reply=$($handler 2>&1)
+reply="$($handler 2>&1)"
 
 # TODO: process different types of responses properly
 send_message "$chat_id" "$reply"
