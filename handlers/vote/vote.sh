@@ -72,7 +72,7 @@ if [ "${arg2}" = "yes" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -ge "$quorum" ]; then
     # merge
-    commit_message="$("$scriptdir"/../../urlencode.sh "Automatically merged after Telegram vote ($votes_yes in favour, $votes_no against)")"
+    commit_message="Automatically merged after Telegram vote ($votes_yes in favour, $votes_no against)"
     repo_secret="$(cat "$scriptdir/repo_secret.txt")"
     response="$(
       curl -s \
