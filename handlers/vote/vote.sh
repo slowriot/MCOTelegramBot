@@ -101,7 +101,19 @@ elif [ "${arg2}" = "no" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -le "-$quorum" ]; then
     # close
-    echo "This would normally close the request but that is not yet implemented, however that's a nice tan."
+    comment="Automatically closed after Telegram vote ($votes_yes in favour, $votes_no against)"
+    curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        -X PATCH \
+        -d '{"state":"closed"}' \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id?client_id=$client_id&client_secret=$client_secret"
+    curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        -X POST \
+        -d "{\"body\":\"${comment//\"/\\\"}\"}" \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/comments?client_id=$client_id&client_secret=$client_secret"
     git pull
   else
     echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
