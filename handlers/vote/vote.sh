@@ -2,7 +2,7 @@
 # voting script to accept pull requests etc
 
 # settings: how many yes votes minus no votes are required to accept
-quorum=10
+quorum=7
 
 scriptdir="$(dirname "${BASH_SOURCE[0]}")"
 
