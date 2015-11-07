@@ -2,9 +2,9 @@
 # please keep this list alphabetical
 # format:
 # telegram command|handler program
+issues|handlers/issues/issues.py
 list|handlers/list/list.py
+me|handlers/me/me.sh
 start|handlers/start/start.sh
 tslist|handlers/tslist/tslist.py
 vote|handlers/vote/vote.sh
-me|handlers/me/me.sh
-issues|handlers/issues/issues.py

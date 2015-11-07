@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # Lists the players currently on teamspeak
-# final loc: /home/minecraft/teamspeaklist.txt
 
-TSLIST_LOCATION = "test.txt"
+TSLIST_LOCATION = "/home/minecraft/teamspeaklist.txt"
 TSLIST_OUTPUT = "{count} players currently on TeamSpeak: {players}"
 
 file = open(TSLIST_LOCATION, 'r')
