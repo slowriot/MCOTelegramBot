@@ -6,3 +6,5 @@ list|handlers/list/list.py
 start|handlers/start/start.sh
 tslist|handlers/tslist/tslist.py
 vote|handlers/vote/vote.sh
+me|handlers/me/me.sh
+issues|handlers/issues/issues.py

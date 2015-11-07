@@ -2,7 +2,7 @@
 # voting script to accept pull requests etc
 
 # settings: how many yes votes minus no votes are required to accept
-quorum=15
+quorum=7
 
 scriptdir="$(dirname "${BASH_SOURCE[0]}")"
 
@@ -72,7 +72,17 @@ if [ "${arg2}" = "yes" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -ge "$quorum" ]; then
     # merge
-    response=$(curl -s --max-time 5 --request PUT "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" | jq -r .message)
+    commit_message="Automatically merged after Telegram vote ($votes_yes in favour, $votes_no against)"
+    repo_secret="$(cat "$scriptdir/repo_secret.txt")"
+    response="$(
+      curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        --request PUT \
+        -d "{\"commit_message\":\"$commit_message\"}" \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/merge?client_id=$client_id&client_secret=$client_secret" \
+        | jq -r .message
+    )"
     echo "Voting for request $pull_id: $response"
     git pull
   else
@@ -91,7 +101,19 @@ elif [ "${arg2}" = "no" ]; then
   votes_total=$((votes_yes - votes_no))
   if [ "$votes_total" -le "-$quorum" ]; then
     # close
-    echo "This would normally close the request but that is not yet implemented, however that's a nice tan."
+    comment="Automatically closed after Telegram vote ($votes_yes in favour, $votes_no against)"
+    curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        -X PATCH \
+        -d '{"state":"closed"}' \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id?client_id=$client_id&client_secret=$client_secret"
+    curl -s \
+        -u slowriot:"$repo_secret" \
+        -H "Content-Type: application/json" \
+        -X POST \
+        -d "{\"body\":\"${comment//\"/\\\"}\"}" \
+        "https://api.github.com/repos/slowriot/MCOTelegramBot/pulls/$pull_id/comments?client_id=$client_id&client_secret=$client_secret"
     git pull
   else
     echo "Votes for pull request $pull_id - in favour: $votes_yes, against: $votes_no.  $((quorum - votes_total)) more votes required to accept."
