@@ -8,3 +8,4 @@ vote|handlers/vote/vote.sh
 update|handlers/vote/update.sh
 me|handlers/me/me.sh
 issues|handlers/issues/issues.py
+lmgtfy|handlers/lmgtfy/lmgtfy.sh
