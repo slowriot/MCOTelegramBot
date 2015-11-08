@@ -3,5 +3,6 @@
 
 scriptdir="$(dirname "${BASH_SOURCE[0]}")"
 
-echo '```'"$(git pull)"'```'
+echo "Pulling from the repository..."
+git pull
 #chown www-data:www-data "$scriptdir" -R
