@@ -4,7 +4,9 @@
 # telegram command|handler program
 issues|handlers/issues/issues.py
 list|handlers/list/list.py
+lmgtfy|handlers/lmgtfy/lmgtfy.sh
 me|handlers/me/me.sh
 start|handlers/start/start.sh
 tslist|handlers/tslist/tslist.py
+update|handlers/vote/update.sh
 vote|handlers/vote/vote.sh
