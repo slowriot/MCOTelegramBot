@@ -7,12 +7,12 @@ TSLIST_OUTPUT = "{count} players currently on TeamSpeak: {players}"
 players = []
 
 try:
-	file = open(TSLIST_LOCATION, 'r')
+	f = open(TSLIST_LOCATION, 'r')
 
-	for line in file:
+	for line in f:
 		players.append(line.strip())
 finally:
-	file.close()
+	f.close()
 	
 if len(players) == 0:
 	print("Nobody on TeamSpeak right now")
