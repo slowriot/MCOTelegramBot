@@ -22,7 +22,7 @@ function send_raw() {
   # 1 = raw command to send
   #echo "DEBUG: running: wget $api/$1"
   wget -q "$api/$1" -O - | jq .
-  echo "wget -q \"$api/$1\" -O - | jq ." >> temp.txt
+  #echo "wget -q \"$api/$1\" -O - | jq ." >> sent_to_telegram.log
 }
 function send_message() {
   # 1 = chat id
