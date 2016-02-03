@@ -58,7 +58,7 @@ if [ "$1" = "setup" ]; then
   secreturl=$(cat "$scriptdir/secreturl.txt")
   thisurl="https://minecraftonline.com/cgi-bin/telegram_bot_webhook_$secreturl"
   echo "Requesting webhook setting for $thisurl"
-  thisurl="$(urlencode "$thisurl")"
+  thisurl="$(url_encode "$thisurl")"
   send_raw "setWebhook?url=$thisurl"
   exit
 fi
