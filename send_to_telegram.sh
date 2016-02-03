@@ -16,6 +16,11 @@ api="$endpoint/bot$token"
 
 handlers_file="$scriptdir/handlers.txt"
 
+disablepreview=false
+if [ "$2" = "--nopreview" ]; then
+  disablepreview=true
+fi
+
 ############ Sending functions ############
 
 function send_raw() {
@@ -27,7 +32,12 @@ function send_raw() {
 function send_message() {
   # 1 = chat id
   # 2 = text
-  send_raw "sendmessage?chat_id=$1&text=$2"
+  text=$(/var/www/voxelstorm/cgi-bin/urlencode.sh <<< "$2")
+  if $disablepreview; then
+    send_raw "sendmessage?chat_id=$1&text=$text&disable_web_page_preview=true"
+  else
+    send_raw "sendmessage?chat_id=$1&text=$text"
+  fi
 }
 function send_reply() {
   # 1 = chat id
