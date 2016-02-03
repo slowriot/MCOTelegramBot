@@ -2,6 +2,7 @@
 # please keep this list alphabetical
 # format:
 # telegram command|handler program
+environment|handlers/environment/environment.sh
 issues|handlers/issues/issues.py
 list|handlers/list/list.py
 lmgtfy|handlers/lmgtfy/lmgtfy.sh
